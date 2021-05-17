@@ -23,3 +23,5 @@ Automates the process of rigging clothes to a mesh as described [here](https://b
 ## `apply-modifiers-preserve-shapekeys.py`
 
 Creates a clone of active object and applies all of its modifiers while perserving shape keys. If the source is linked to an armature, then the script attempts to do the same to the final mesh.
+
+*Note*: This was only tested on modifiers that do not change vertex count or weight groups while using different shape key values.
