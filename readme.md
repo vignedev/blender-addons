@@ -17,3 +17,9 @@ The sole reason why this addon exists is because of [a bug](https://developer.bl
 Automates the process of rigging clothes to a mesh as described [here](https://blender.stackexchange.com/questions/67625/how-to-rig-clothes). Alongside that, it also cleans the weights as wel.
 
 **Usage**: Select the meshes you want to bind and *set the source mesh as the active selection*.
+
+---
+
+## `apply-modifiers-preserve-shapekeys.py`
+
+Creates a clone of active object and applies all of its modifiers while perserving shape keys. If the source is linked to an armature, then the script attempts to do the same to the final mesh.
