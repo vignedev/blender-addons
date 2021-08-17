@@ -18,11 +18,24 @@ Automates the process of rigging clothes to a mesh as described [here](https://b
 
 **Usage**: Select the meshes you want to bind and *set the source mesh as the active selection*.
 
-*Note:* If one of the objects to be binded should not have any modifiers that drastically change the shape (eg. shrinkwrap).
+***Note***: If one of the objects to be binded should not have any modifiers that drastically change the shape (eg. shrinkwrap).
+
 ---
 
 ## `apply-modifiers-preserve-shapekeys.py`
 
 Creates a clone of active object and applies all of its modifiers while perserving shape keys. If the source is linked to an armature, then the script attempts to do the same to the final mesh.
 
-*Note*: This was only tested on modifiers that do not change vertex count or weight groups while using different shape key values.
+***Note***: This was only tested on modifiers that do not change vertex count or weight groups while using different shape key values.
+
+---
+
+## [`Rigify-To-Unity`](https://github.com/vignedev/Rigify-To-Unity)
+
+Fork of [AlexLemminG's](https://github.com/AlexLemminG/Rigify-To-Unity) Blender script with support for already weight mapped rigs.
+
+As it is a fork of an already existing script, it can be found [in its own repository](https://github.com/vignedev/Rigify-To-Unity).
+
+In addition to removal of incompatible bones, it merges vertex groups of deleted deform bones of into their parent bone's vertex group.
+
+***Note***: It performs destructive operations (deleting bones, reparenting them, modifies vertex groups), so it is advised to *use this script, export and then revert back*. 
