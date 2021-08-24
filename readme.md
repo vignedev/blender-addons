@@ -18,7 +18,7 @@ Automates the process of rigging clothes to a mesh as described [here](https://b
 
 **Usage**: Select the meshes you want to bind and *set the source mesh as the active selection*.
 
-***Note***: If one of the objects to be binded should not have any modifiers that drastically change the shape (eg. shrinkwrap).
+***Note***: None of the objects to be binded should not have any modifiers that drastically change the shape (eg. shrinkwrap).
 
 ---
 
