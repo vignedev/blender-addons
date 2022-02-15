@@ -64,6 +64,7 @@ class RenderButtonPanel(bpy.types.Panel):
         render_anim_btn.animation = True
         
         layout.label(text='Preview: "' + new_path + '"', icon='QUESTION')
+        layout.label(text='The UI will be locked and can be only cancelled using SIGINT.', icon='ERROR')
 
 
 def register():
