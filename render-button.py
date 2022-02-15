@@ -47,10 +47,10 @@ class RenderButtonPanel(bpy.types.Panel):
         layout = self.layout
 
         scene = context.scene
-        layout.prop(context.scene.render_button_settings, 'path')
-        layout.prop(context.scene.render_button_settings, 'format')
-        
-        new_path = context.scene.render_button_settings.generate_name()
+        new_path = scene.render_button_settings.generate_name()
+
+        layout.prop(scene.render_button_settings, 'path')
+        layout.prop(scene.render_button_settings, 'format')
         
         split = layout.split()
         split.scale_y = 2.0
@@ -61,7 +61,7 @@ class RenderButtonPanel(bpy.types.Panel):
         col = split.column()
         render_anim_btn = col.operator('render.render_autoname', text='Render Animation', icon='RENDER_ANIMATION')
         render_anim_btn.new_path = new_path
-        render_still_btn.animation = True
+        render_anim_btn.animation = True
         
         layout.label(text='Preview: "' + new_path + '"', icon='QUESTION')
 
