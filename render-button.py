@@ -11,19 +11,38 @@ bl_info = {
 
 import bpy
 import datetime
+import platform
+import subprocess
 
 class RenderButtonOperator(bpy.types.Operator):
     """Basically a bpy.ops.render.render proxy"""
     bl_idname = 'render.render_autoname'
     bl_label = 'Render with given settings.'
     
+    terminal: bpy.props.BoolProperty(name='External', default=False)
     new_path: bpy.props.StringProperty(name='Render output to be set before render', default='')
     animation: bpy.props.BoolProperty(name='Render as animation', default=False)
     
     def execute(self, context):
-        bpy.context.scene.render.filepath = self.new_path
-        bpy.context.scene.render.use_file_extension = True
-        return bpy.ops.render.render(animation=self.animation, use_viewport=True, write_still=True)
+        if self.terminal is False:
+            bpy.context.scene.render.filepath = self.new_path
+            bpy.context.scene.render.use_file_extension = True
+            return bpy.ops.render.render(animation=self.animation, use_viewport=True, write_still=True)
+        else:
+            general_cmd = [
+                *context.scene.render_button_settings.determine_terminal(),
+                bpy.app.binary_path,
+                '-b',
+                bpy.data.filepath,
+                '-o',
+                self.new_path
+            ]
+            if self.animation:
+                subprocess.Popen([*general_cmd, '-a'])
+            else:
+                subprocess.Popen([*general_cmd, '-f', str(bpy.context.scene.frame_current)])
+            return {'FINISHED'}
+
 
 class RenderButtonSettings(bpy.types.PropertyGroup):
     path: bpy.props.StringProperty(name="Directory",
@@ -32,7 +51,24 @@ class RenderButtonSettings(bpy.types.PropertyGroup):
                                    subtype="DIR_PATH")
     format: bpy.props.StringProperty(name="Format",
                                      default="%y%m%d_%H%M%S/######")
-                                     
+    terminal: bpy.props.BoolProperty(name='Render on separate instance',
+                                     default=False,
+                                     description='Run render job in Terminal')
+    linux_terminal: bpy.props.StringProperty(name='Linux Terminal',
+                                             default='urxvt',
+                                             description='Path to a Linux terminal')
+
+    def determine_terminal(self) -> list[str]:
+        """Returns the path to the terminal emulator that is available"""
+        platform_name = platform.system()
+        if platform_name == 'Linux':
+            return [str(self.linux_terminal), '-e']
+        elif platform_name == 'Windows':
+            return ['cmd.exe', '/c', 'start']
+        else:
+            raise Exception(f'Cannot find terminal for "{platform_name}" platform.')
+
+  
     def generate_name(self) -> str:
         return self.path + '/' + datetime.datetime.now().strftime(self.format)
 
@@ -56,13 +92,25 @@ class RenderButtonPanel(bpy.types.Panel):
         split.scale_y = 2.0
         col = split.column()
         render_still_btn = col.operator('render.render_autoname', text='Render Still', icon='RENDER_STILL')
+        render_still_btn.terminal = scene.render_button_settings.terminal
         render_still_btn.new_path = new_path
         render_still_btn.animation = False
         col = split.column()
         render_anim_btn = col.operator('render.render_autoname', text='Render Animation', icon='RENDER_ANIMATION')
+        render_anim_btn.terminal = scene.render_button_settings.terminal
         render_anim_btn.new_path = new_path
         render_anim_btn.animation = True
         
+        platform_name = platform.system()
+        if platform_name in ('Windows', 'Linux'):
+            layout.prop(scene.render_button_settings, 'terminal')
+            if scene.render_button_settings.terminal:
+                box = layout.box()
+                box.label(text='This will use the currently opened project and its last saved instance!', icon='ERROR')
+                box.label(text='This is purely experimental.', icon='ERROR')
+                if platform.system() == 'Linux':
+                    box.prop(scene.render_button_settings, 'linux_terminal')
+
         layout.label(text='Preview: "' + new_path + '"', icon='QUESTION')
         layout.label(text='The UI will be locked and can be only cancelled using SIGINT.', icon='ERROR')
 
