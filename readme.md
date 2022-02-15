@@ -39,3 +39,13 @@ As it is a fork of an already existing script, it can be found [in its own repos
 In addition to removal of incompatible bones, it merges vertex groups of deleted deform bones of into their parent bone's vertex group.
 
 ***Note***: It performs destructive operations (deleting bones, reparenting them, modifies vertex groups), so it is advised to *use this script, export and then revert back*. 
+
+---
+
+## `render-button.py`
+
+![](./assets/render_btn.png)
+
+Adds a new panel into Output settings with two buttons for rendering stills and animations, which will render into a generated path based on the format and directory.
+
+*Note: Render still differs from normal Blender's Render Still, as this will render into a file.*
