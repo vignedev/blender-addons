@@ -49,3 +49,11 @@ In addition to removal of incompatible bones, it merges vertex groups of deleted
 Adds a new panel into Output settings with two buttons for rendering stills and animations, which will render into a generated path based on the format and directory.
 
 *Note: Render still differs from normal Blender's Render Still, as this will render into a file.*
+
+---
+
+## `render-webhook.py`
+
+Adds an option to execute a Discord webhook after a render job is completed.
+
+You'll need to enable the addon, set the Webhook URL in the addon's preferences and then enable the Webhook feature in the Scene's Output panel.
