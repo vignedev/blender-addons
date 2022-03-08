@@ -29,8 +29,11 @@ class GLRendererInfo(bpy.types.Panel):
     last_time_check = None
 
     def get_timeout_ms(self):
-        with open(self.workaround_path) as file:
-            self.last_time_check = int(file.read())
+        try:
+            with open(self.workaround_path) as file:
+                self.last_time_check = int(file.read())
+        except:
+            pass
 
     def draw(self, context):
         layout = self.layout
