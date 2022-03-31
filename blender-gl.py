@@ -12,6 +12,7 @@ bl_info = {
 
 import bpy
 import bgl
+import os
 
 class GLRendererInfo(bpy.types.Panel):
     """Display GL Renderer info"""
@@ -39,11 +40,14 @@ class GLRendererInfo(bpy.types.Panel):
         layout = self.layout
 
         if 'Mesa Intel(R) UHD Graphics 620' in self.renderer:
+            box = layout.box()
             if self.last_time_check is None:
                 self.get_timeout_ms()
             if self.last_time_check <= 640:
-                box = layout.box()
                 box.label(text=f'preempt_timeout_ms seems too low! ({self.last_time_check}ms)', icon='ERROR')
+            if 'INTEL_DEBUG' not in os.environ or 'reemit' not in os.environ['INTEL_DEBUG']:
+                box.label(text=f'INTEL_DEBUG=reemit is not enabled!', icon='ERROR')
+
 
         row = layout.row(align=True)
         row.label(text="Renderer: " + self.renderer)
