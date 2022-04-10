@@ -49,6 +49,42 @@ class RenderWebhook_Settings(bpy.types.PropertyGroup):
         default=False
     )
 
+    enable_webhook_render_cancel: bpy.props.BoolProperty(
+        name='render_cancel',
+        description='...on canceling a render job',
+        default=True
+    )
+    enable_webhook_render_complete: bpy.props.BoolProperty(
+        name='render_complete',
+        description='...on completion of render job',
+        default=True
+    )
+    enable_webhook_render_init: bpy.props.BoolProperty(
+        name='render_init',
+        description='...on initialization of a render job',
+        default=True
+    )
+    enable_webhook_render_post: bpy.props.BoolProperty(
+        name='render_post',
+        description='...on render (after)',
+        default=False
+    )
+    enable_webhook_render_pre: bpy.props.BoolProperty(
+        name='render_pre',
+        description='...on render (before)',
+        default=False
+    )
+    enable_webhook_render_stats: bpy.props.BoolProperty(
+        name='render_stats',
+        description='...on printing render statistics',
+        default=False
+    )
+    enable_webhook_render_write: bpy.props.BoolProperty(
+        name='render_write',
+        description='...on writing a render frame (directly after the frame is written)',
+        default=False
+    )
+
 class RenderWebhook_Panel(bpy.types.Panel):
     bl_label = 'Render Webhook'
     bl_space_type = 'PROPERTIES'
@@ -60,16 +96,22 @@ class RenderWebhook_Panel(bpy.types.Panel):
         self.layout.prop(context.scene.render_webhook_settings, 'enable_webhook', text='')
 
     def draw(self, context):
+        self.layout.label(text='Execute on these events:')
+        box = self.layout.box()
+        box.enabled = context.scene.render_webhook_settings.enable_webhook
+
+        box.prop(context.scene.render_webhook_settings, 'enable_webhook_render_cancel',   text='On Render Job Cancelled')
+        box.prop(context.scene.render_webhook_settings, 'enable_webhook_render_complete', text='On Render Job Completed')
+        box.prop(context.scene.render_webhook_settings, 'enable_webhook_render_init',     text='On Render Job started')
+        box.prop(context.scene.render_webhook_settings, 'enable_webhook_render_post',     text='After rendering a frame')
+        box.prop(context.scene.render_webhook_settings, 'enable_webhook_render_pre',      text='Before rendering a frame')
+        box.prop(context.scene.render_webhook_settings, 'enable_webhook_render_stats',    text='After Render Statistics')
+        box.prop(context.scene.render_webhook_settings, 'enable_webhook_render_write',    text='After Render Frame Written')
         pass
 
-@bpy.app.handlers.persistent
-def RenderWebhook_RenderComplete(_):
-    scene = bpy.context.scene
-    if scene.render_webhook_settings.enable_webhook is False:
-        return
-    
+def RenderWebhook_Execute(scene, event_name):
     pref = bpy.context.preferences.addons[__name__].preferences
-    blendname = bpy.data.filepath.split('/')[-1]
+    blendname = bpy.data.filepath or 'no name'
 
     requests.post(
         pref.webhook_url,
@@ -77,24 +119,19 @@ def RenderWebhook_RenderComplete(_):
             'content': None,
             'embeds': [
                 {
-                    'title': f"Render finished (`{blendname or 'no name'}`)",
+                    'title': f"`{event_name}`",
                     'color': 15110425,
                     'timestamp': datetime.datetime.now().isoformat(),
                     'footer': {
                         'text': scene.name
-                    }
-                    # 'fields': [
-                    #     {
-                    #         'name': 'Frame Range',
-                    #         'value': f'```{scene.frame_start}/{scene.frame_end}```',
-                    #         'inline': True
-                    #     },
-                    #     {
-                    #         'name': 'Format',
-                    #         'value': f'```{scene.render.image_settings.file_format}```',
-                    #         'inline': True
-                    #     }
-                    # ]
+                    },
+                    'fields': [
+                        {
+                            "name": "file",
+                            "value": blendname,
+                            "inline": False
+                        }
+                    ]
                 }
             ]
         }),
@@ -103,13 +140,77 @@ def RenderWebhook_RenderComplete(_):
 
 ####################################################################################################
 
+@bpy.app.handlers.persistent
+def RenderWebhook_Callback_render_cancel(_):
+    scene = bpy.context.scene
+    settings = scene.render_webhook_settings
+    if settings.enable_webhook is False or settings.enable_webhook_render_cancel is False:
+        return
+    RenderWebhook_Execute(bpy.context.scene, 'render_cancel')
+    
+@bpy.app.handlers.persistent
+def RenderWebhook_Callback_render_complete(_):
+    scene = bpy.context.scene
+    settings = scene.render_webhook_settings
+    if settings.enable_webhook is False or settings.enable_webhook_render_complete is False:
+        return
+    RenderWebhook_Execute(bpy.context.scene, 'render_complete')
+    
+@bpy.app.handlers.persistent
+def RenderWebhook_Callback_render_init(_):
+    scene = bpy.context.scene
+    settings = scene.render_webhook_settings
+    if settings.enable_webhook is False or settings.enable_webhook_render_init is False:
+        return
+    RenderWebhook_Execute(bpy.context.scene, 'render_init')
+    
+@bpy.app.handlers.persistent
+def RenderWebhook_Callback_render_post(_):
+    scene = bpy.context.scene
+    settings = scene.render_webhook_settings
+    if settings.enable_webhook is False or settings.enable_webhook_render_post is False:
+        return
+    RenderWebhook_Execute(bpy.context.scene, 'render_post')
+    
+@bpy.app.handlers.persistent
+def RenderWebhook_Callback_render_pre(_):
+    scene = bpy.context.scene
+    settings = scene.render_webhook_settings
+    if settings.enable_webhook is False or settings.enable_webhook_render_pre is False:
+        return
+    RenderWebhook_Execute(bpy.context.scene, 'render_pre')
+    
+@bpy.app.handlers.persistent
+def RenderWebhook_Callback_render_stats(_):
+    scene = bpy.context.scene
+    settings = scene.render_webhook_settings
+    if settings.enable_webhook is False or settings.enable_webhook_render_stats is False:
+        return
+    RenderWebhook_Execute(bpy.context.scene, 'render_stats')
+    
+@bpy.app.handlers.persistent
+def RenderWebhook_Callback_render_write(_):
+    scene = bpy.context.scene
+    settings = scene.render_webhook_settings
+    if settings.enable_webhook is False or settings.enable_webhook_render_write is False:
+        return
+    RenderWebhook_Execute(bpy.context.scene, 'render_write')
+    
+
 def register():
     bpy.utils.register_class(RenderWebhook_Prefs)
     bpy.utils.register_class(RenderWebhook_Settings)
     bpy.utils.register_class(RenderWebhook_TestOperator)
     bpy.utils.register_class(RenderWebhook_Panel)
     bpy.types.Scene.render_webhook_settings = bpy.props.PointerProperty(type=RenderWebhook_Settings)
-    bpy.app.handlers.render_complete.append(RenderWebhook_RenderComplete)
+
+    bpy.app.handlers.render_cancel.append(RenderWebhook_Callback_render_cancel)
+    bpy.app.handlers.render_complete.append(RenderWebhook_Callback_render_complete)
+    bpy.app.handlers.render_init.append(RenderWebhook_Callback_render_init)
+    bpy.app.handlers.render_post.append(RenderWebhook_Callback_render_post)
+    bpy.app.handlers.render_pre.append(RenderWebhook_Callback_render_pre)
+    bpy.app.handlers.render_stats.append(RenderWebhook_Callback_render_stats)
+    bpy.app.handlers.render_write.append(RenderWebhook_Callback_render_write)
 
 def unregister():
     bpy.utils.unregister_class(RenderWebhook_Prefs)
@@ -117,7 +218,14 @@ def unregister():
     bpy.utils.unregister_class(RenderWebhook_TestOperator)
     bpy.utils.unregister_class(RenderWebhook_Panel)
     del bpy.types.Scene.render_webhook_settings
-    bpy.app.handlers.render_complete.remove(RenderWebhook_RenderComplete)
+
+    bpy.app.handlers.render_cancel.remove(RenderWebhook_Callback_render_cancel)
+    bpy.app.handlers.render_complete.remove(RenderWebhook_Callback_render_complete)
+    bpy.app.handlers.render_init.remove(RenderWebhook_Callback_render_init)
+    bpy.app.handlers.render_post.remove(RenderWebhook_Callback_render_post)
+    bpy.app.handlers.render_pre.remove(RenderWebhook_Callback_render_pre)
+    bpy.app.handlers.render_stats.remove(RenderWebhook_Callback_render_stats)
+    bpy.app.handlers.render_write.remove(RenderWebhook_Callback_render_write)
 
 if __name__ == '__main__':
     register()
