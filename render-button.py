@@ -74,7 +74,7 @@ class RenderButtonSettings(bpy.types.PropertyGroup):
 
 class RenderButtonPanel(bpy.types.Panel):
     bl_label = 'Automatic Render Destination'
-    bl_idname = 'SCENE_PT_layout'
+    bl_idname = 'SCENE_PT_renderbutton_layout'
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = 'output'
