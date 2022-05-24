@@ -57,3 +57,11 @@ Adds a new panel into Output settings with two buttons for rendering stills and 
 Adds an option to execute a Discord webhook after a render job is completed.
 
 You'll need to enable the addon, set the Webhook URL in the addon's preferences and then enable the Webhook feature in the Scene's Output panel.
+
+---
+
+## `change-imageprojection.py`
+
+Quickly changes image projection type of selected nodes in the Shader Node editor.
+
+![Example](./assets/projection_change.mp4)
