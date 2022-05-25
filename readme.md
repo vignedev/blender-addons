@@ -64,4 +64,4 @@ You'll need to enable the addon, set the Webhook URL in the addon's preferences 
 
 Quickly changes image projection type of selected nodes in the Shader Node editor.
 
-![Example](./assets/projection_change.mp4)
+[![Example](./assets/projection_change.gif)](./assets/projection_change.mp4)
