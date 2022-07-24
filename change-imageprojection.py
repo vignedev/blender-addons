@@ -16,14 +16,15 @@ class ChangeImageProjectionOperator(bpy.types.Operator):
     """Change selected image textures' projection type."""
     bl_idname = "node.change_image_projection_operator"
     bl_label = "Change Image Texture Projection"
+    bl_options = {'REGISTER', 'UNDO'}
 
-    projection: bpy.props.EnumProperty(items=[
+    projection: bpy.props.EnumProperty(name='Projection', items=[
         ('FLAT', 'Flat', '', 1),
         ('BOX', 'Box', '', 2),
         ('SPHERE', 'Sphere', '', 3),
         ('TUBE', 'Tube', '', 3)
     ])
-    blend: bpy.props.FloatProperty(min=0.0, max=1.0)
+    blend: bpy.props.FloatProperty(name='Box Blending', min=0.0, max=1.0)
 
     @classmethod
     def poll(cls, context):
