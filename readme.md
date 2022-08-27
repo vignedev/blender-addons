@@ -9,27 +9,31 @@ Blender addons that I've written that are somewhat useful (for me).
 Basically, I got lazy with separating things into different files/addons, so this is my general QOL package, which includes:
 
 <details>
-    <summary>Quick Sew</summary>
-    Shorthand version for "bridge two edge loops and delete only faces".
+    <summary><b>Quick Sew</b></summary>
+    Shorthand version for "bridge two edge loops and delete only faces".    
 </details>
 
 <details>
-    <summary>Toggle Pose Position operator</summary>
+    <summary><b>Toggle Pose Position operator</b></summary>
     Allows to quicky toggle between pose/rest position modes for armatures. Works on active armatures or meshes that belong to an armature.
 </details>
 
 <details>
-    <summary>Bone Layer Switcher</summary>
+    <summary><b>Bone Layer Switcher</b></summary>
     Allows to quicky switch between multiple group of bone layers.
+    
+https://user-images.githubusercontent.com/18449733/187050267-954c92c0-9302-4a93-a048-90b43fda7538.mp4
 </details>
 
 <details>
-    <summary>View Settings Switcher</summary>
+    <summary><b>View Settings Switcher</b></summary>
     Allows to quicky switch between view settings of the scene. This includes the entirety of the "Color Management" panel in the Render properties (with the exception of Sequencer setting).
+    
+https://user-images.githubusercontent.com/18449733/187050269-1d5c82dd-799d-4dec-92bc-86fbe1d3a6a2.mp4
 </details>
 
 
-Please do note that UI wise they may feel cluttery and may be unoptimized, however these addons were added to just accelerate the trial-and-error process of figuring out different settings.
+Please do note that UI wise they may feel cluttery, clunky and may be unoptimized, however these addons were added to just accelerate the trial-and-error process of figuring out different settings.
 
 ---
 
