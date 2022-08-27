@@ -4,6 +4,35 @@ Blender addons that I've written that are somewhat useful (for me).
 
 ---
 
+## `vig-qol.py`
+
+Basically, I got lazy with separating things into different files/addons, so this is my general QOL package, which includes:
+
+<details>
+    <summary>Quick Sew</summary>
+    Shorthand version for "bridge two edge loops and delete only faces".
+</details>
+
+<details>
+    <summary>Toggle Pose Position operator</summary>
+    Allows to quicky toggle between pose/rest position modes for armatures. Works on active armatures or meshes that belong to an armature.
+</details>
+
+<details>
+    <summary>Bone Layer Switcher</summary>
+    Allows to quicky switch between multiple group of bone layers.
+</details>
+
+<details>
+    <summary>View Settings Switcher</summary>
+    Allows to quicky switch between view settings of the scene. This includes the entirety of the "Color Management" panel in the Render properties (with the exception of Sequencer setting).
+</details>
+
+
+Please do note that UI wise they may feel cluttery and may be unoptimized, however these addons were added to just accelerate the trial-and-error process of figuring out different settings.
+
+---
+
 ## `blender-gl.py`
 
 This addons adds a section into the Render settings which just displays the current OpenGL renderer information.
