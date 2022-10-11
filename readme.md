@@ -32,6 +32,11 @@ https://user-images.githubusercontent.com/18449733/187050267-954c92c0-9302-4a93-
 https://user-images.githubusercontent.com/18449733/187050269-1d5c82dd-799d-4dec-92bc-86fbe1d3a6a2.mp4
 </details>
 
+<details>
+    <summary><b>Open Project's directory</b><summary>
+
+    Opens the directory where the project is located in the file explorer.
+</details>
 
 Please do note that UI wise they may feel cluttery, clunky and may be unoptimized, however these addons were added to just accelerate the trial-and-error process of figuring out different settings.
 

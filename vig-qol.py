@@ -10,6 +10,7 @@ bl_info = {
     "category": "Generic",
 }
 
+import webbrowser
 import bpy
 from functools import reduce
 
@@ -22,10 +23,6 @@ class QuickSew(bpy.types.Operator):
     bl_idname = "mesh.quicksew"
     bl_label = 'Quick Sew'
     bl_options = {'REGISTER', 'UNDO'}
-
-    @classmethod
-    def poll(self, context):
-        return True
 
     def execute(self, context):
         bpy.ops.mesh.bridge_edge_loops()
@@ -251,8 +248,23 @@ class ViewSettingsSwitcherPanel(bpy.types.Panel):
         # layout.label(text='wah')
 
 
+#
+#  Open the local project's directory
+#
+class OpenProjectDirectory(bpy.types.Operator):
+    bl_idname = 'os.openprojectdir'
+    bl_label = 'Open project\'s directory'
+
+    @classmethod
+    def poll(self, context):
+        return bpy.path.abspath('//') != ''
+
+    def execute(self, context):
+        webbrowser.open(bpy.path.abspath('//'))
+        return { 'FINISHED' }
+
 # Registration
-classes = (SwitchPosePositionOperator, BoneLayerSwitcherUpdateOperator, BoneLayerSwitcherPanel, QuickSew, ViewSettingsSwitcherUpdateOperator, ViewSettingsSwitcherPanel)
+classes = (SwitchPosePositionOperator, BoneLayerSwitcherUpdateOperator, BoneLayerSwitcherPanel, QuickSew, ViewSettingsSwitcherUpdateOperator, ViewSettingsSwitcherPanel, OpenProjectDirectory)
 def register():
     for c in classes: bpy.utils.register_class(c)
 def unregister():
