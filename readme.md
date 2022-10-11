@@ -33,8 +33,7 @@ https://user-images.githubusercontent.com/18449733/187050269-1d5c82dd-799d-4dec-
 </details>
 
 <details>
-    <summary><b>Open Project's directory</b><summary>
-
+    <summary><b>Open Project's directory</b></summary>
     Opens the directory where the project is located in the file explorer.
 </details>
 
