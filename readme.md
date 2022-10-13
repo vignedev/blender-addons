@@ -85,8 +85,6 @@ In addition to removal of incompatible bones, it merges vertex groups of deleted
 
 Adds a new panel into Output settings with two buttons for rendering stills and animations, which will render into a generated path based on the format and directory.
 
-*Note: Render still differs from normal Blender's Render Still, as this will render into a file.*
-
 ---
 
 ## `render-webhook.py`
