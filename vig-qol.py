@@ -249,11 +249,12 @@ class ViewSettingsSwitcherPanel(bpy.types.Panel):
 
 
 #
-#  Open the local project's directory
 #
-class OpenProjectDirectory(bpy.types.Operator):
-    bl_idname = 'os.openprojectdir'
-    bl_label = 'Open project\'s directory'
+#  Open the local project's folder
+#
+class OpenProjectFolder(bpy.types.Operator):
+    bl_idname = 'os.openprojectfolder'
+    bl_label = 'Open project\'s folder'
 
     @classmethod
     def poll(self, context):
@@ -264,7 +265,15 @@ class OpenProjectDirectory(bpy.types.Operator):
         return { 'FINISHED' }
 
 # Registration
-classes = (SwitchPosePositionOperator, BoneLayerSwitcherUpdateOperator, BoneLayerSwitcherPanel, QuickSew, ViewSettingsSwitcherUpdateOperator, ViewSettingsSwitcherPanel, OpenProjectDirectory)
+classes = (
+    SwitchPosePositionOperator,
+    BoneLayerSwitcherUpdateOperator,
+    BoneLayerSwitcherPanel,
+    QuickSew,
+    ViewSettingsSwitcherUpdateOperator,
+    ViewSettingsSwitcherPanel,
+    OpenProjectFolder,
+)
 def register():
     for c in classes: bpy.utils.register_class(c)
 def unregister():
