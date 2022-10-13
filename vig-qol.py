@@ -62,7 +62,7 @@ class SwitchPosePositionOperator(bpy.types.Operator):
 class BoneLayerSwitcherUpdateOperator(bpy.types.Operator):
     bl_idname = 'bonelayerswitcher.update'
     bl_label = 'Bone Layout Update'
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {'REGISTER', 'UNDO', 'INTERNAL'}
     
     action: bpy.props.EnumProperty(name='Action', items=[
         ('ADD', 'Add', '') ,
@@ -138,7 +138,7 @@ class BoneLayerSwitcherPanel(bpy.types.Panel):
 class ViewSettingsSwitcherUpdateOperator(bpy.types.Operator):
     bl_idname = 'viewsettingsswitcher.update'
     bl_label = 'View Settings Update'
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {'REGISTER', 'UNDO', 'INTERNAL'}
 
     action: bpy.props.EnumProperty(name='Action', items=[
         ('ADD', 'Add', '') ,
