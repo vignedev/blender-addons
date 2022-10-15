@@ -264,6 +264,36 @@ class OpenProjectFolder(bpy.types.Operator):
         webbrowser.open(bpy.path.abspath('//'))
         return { 'FINISHED' }
 
+#
+#   Adds selected bones (transforms) to the currently active keying set
+#   Maybe in the future expand this to objects as well
+#
+class AddPoseBonesToKeyingSet(bpy.types.Operator):
+    bl_idname = 'vig.addposebonetokeychain'
+    bl_label = 'Add selected pose bones to active keying set'
+    bl_options = { 'REGISTER', 'UNDO' }
+
+    @classmethod
+    def poll(self, context):
+        return context.mode == 'POSE'
+
+    def execute(self, context):
+        if not context.scene.keying_sets.active:
+            raise 'No active keying state.'
+        target = context.active_object
+        keying_set = context.scene.keying_sets.active
+        
+        for bone in context.selected_pose_bones_from_active_object:
+            keying_set.paths.add(target, f'pose.bones["{bone.name}"].location', index=-1)
+            if bone.rotation_mode == 'QUATERNION':
+                keying_set.paths.add(target, f'pose.bones["{bone.name}"].rotation_quaternion', index=-1)
+            elif bone.rotation_mode == 'AXIS_ANGLE':
+                keying_set.paths.add(target, f'pose.bones["{bone.name}"].rotation_axis_angle', index=-1)
+            else:
+                keying_set.paths.add(target, f'pose.bones["{bone.name}"].rotation_euler', index=-1)
+            keying_set.paths.add(target, f'pose.bones["{bone.name}"].scale', index=-1)
+        return { 'FINISHED' }
+
 # Registration
 classes = (
     SwitchPosePositionOperator,
@@ -273,6 +303,7 @@ classes = (
     ViewSettingsSwitcherUpdateOperator,
     ViewSettingsSwitcherPanel,
     OpenProjectFolder,
+    AddPoseBonesToKeyingSet
 )
 def register():
     for c in classes: bpy.utils.register_class(c)

@@ -37,6 +37,11 @@ https://user-images.githubusercontent.com/18449733/187050269-1d5c82dd-799d-4dec-
     Opens the directory where the project is located in the file explorer.
 </details>
 
+<details>
+    <summary><b>Add Selected PoseBones To KeyingSet</b></summary>
+    Adds the selected pose bones into the currently active keying set. Only adds the position, scale and rotation based on the rotation mode being chosen.
+</details>
+
 Please do note that UI wise they may feel cluttery, clunky and may be unoptimized, however these addons were added to just accelerate the trial-and-error process of figuring out different settings.
 
 ---
