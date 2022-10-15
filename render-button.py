@@ -11,19 +11,22 @@ bl_info = {
 
 import bpy
 import datetime
-import platform
 
 class RenderButtonOperator(bpy.types.Operator):
     """Basically a bpy.ops.render.render proxy in a way"""
     bl_idname = 'render.render_autoname'
     bl_label = 'Render with given settings.'
+    bl_options = { 'INTERNAL' }
     
     new_path: bpy.props.StringProperty(name='Render output to be set before render', default='')
     animation: bpy.props.BoolProperty(name='Render as animation', default=False)
+    pre_script: bpy.props.StringProperty(name='Pre-render Script (as string)')
     
     def execute(self, context):
         context.scene.render.filepath = self.new_path
         context.scene.render.use_file_extension = True
+        if self.pre_script:
+            exec(self.pre_script, {})
         return bpy.ops.render.render('INVOKE_DEFAULT', animation=self.animation, use_viewport=True, write_still=True)
 
 
@@ -34,6 +37,9 @@ class RenderButtonSettings(bpy.types.PropertyGroup):
                                    subtype="DIR_PATH")
     format: bpy.props.StringProperty(name="Format",
                                      default="%y%m%d_%H%M%S/######")
+    pre_script: bpy.props.PointerProperty(type=bpy.types.Text,
+                                          name='Pre-render script',
+                                          description='Script that\'d be called in a thread-safe manner before the render. (Note that this doesn\'t handle depsgraph or driver updates)')
   
     def generate_name(self) -> str:
         return self.path + '/' + datetime.datetime.now().strftime(self.format)
@@ -50,9 +56,12 @@ class RenderButtonPanel(bpy.types.Panel):
 
         scene = context.scene
         new_path = scene.render_button_settings.generate_name()
+        pre_script = scene.render_button_settings.pre_script
+        pre_script_text = pre_script.as_string() if pre_script else ''
 
         layout.prop(scene.render_button_settings, 'path')
         layout.prop(scene.render_button_settings, 'format')
+        layout.prop(scene.render_button_settings, 'pre_script')
         
         split = layout.split()
         split.scale_y = 2.0
@@ -61,11 +70,13 @@ class RenderButtonPanel(bpy.types.Panel):
         render_still_btn = col.operator('render.render_autoname', text='Render Still', icon='RENDER_STILL')
         render_still_btn.new_path = new_path
         render_still_btn.animation = False
+        render_still_btn.pre_script = pre_script_text
 
         col = split.column()
         render_anim_btn = col.operator('render.render_autoname', text='Render Animation', icon='RENDER_ANIMATION')
         render_anim_btn.new_path = new_path
         render_anim_btn.animation = True
+        render_anim_btn.pre_script = pre_script_text
 
         layout.label(text='Preview: "' + new_path + '"', icon='QUESTION')
 

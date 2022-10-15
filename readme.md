@@ -85,6 +85,14 @@ In addition to removal of incompatible bones, it merges vertex groups of deleted
 
 Adds a new panel into Output settings with two buttons for rendering stills and animations, which will render into a generated path based on the format and directory.
 
+You can also set a script that'll be run before the render operator is called. This is useful for eg. to set certain properties from a UI-safe thread, which might result in a crash if pre-render handlers were to be used. This however does not update the depsgraph or driver, you can however trigger this behaviour manually by ending the script with:
+
+```py
+bpy.data.objects["ina_uber"]["high_quality"] = 1
+bpy.data.objects["ina_uber"].update_tag()                    # https://developer.blender.org/T74000#879966
+bpy.context.scene.frame_set(bpy.context.scene.frame_current) # This triggers the update of the drivers relevant to the property at this object
+```
+
 ---
 
 ## `render-webhook.py`
