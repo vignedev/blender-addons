@@ -91,6 +91,7 @@ class RenderWebhook_Panel(bpy.types.Panel):
     bl_region_type = 'WINDOW'
     bl_context = 'output'
     bl_options = {'DEFAULT_CLOSED'}
+    bl_idname = 'RENDERWEBHOOK_PT_OUTPUT'
 
     def draw_header(self, context):
         self.layout.prop(context.scene.render_webhook_settings, 'enable_webhook', text='')
