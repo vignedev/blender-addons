@@ -42,6 +42,20 @@ https://user-images.githubusercontent.com/18449733/187050269-1d5c82dd-799d-4dec-
     Adds the selected pose bones into the currently active keying set. Only adds the position, scale and rotation based on the rotation mode being chosen.
 </details>
 
+<details>
+    <summary><b>Rename Bone Chain</b></summary>
+    Renames selected bones as a numbered chain, beginning with the *active selection* as the starting bone.
+    
+https://user-images.githubusercontent.com/18449733/226142881-ca2747c6-11cc-4d3a-8c69-59062e900c98.mp4
+</details>
+
+<details>
+    <summary><b>Quick Group into Empty</b></summary>
+    Quickly creates an empty at current selection's median location and parents all selected to the newly created empty.
+    
+https://user-images.githubusercontent.com/18449733/226142915-5b2a0aba-7fb0-4e35-bf22-8fe76f37d75c.mp4
+</details>
+
 Please do note that UI wise they may feel cluttery, clunky and may be unoptimized, however these addons were added to just accelerate the trial-and-error process of figuring out different settings.
 
 ---
