@@ -12,6 +12,7 @@ bl_info = {
 
 import webbrowser
 import bpy
+from mathutils import Vector
 
 class RenameBoneChain(bpy.types.Operator):
     """Renames a given bone chain, with the active bone being the root"""
@@ -45,6 +46,33 @@ class RenameBoneChain(bpy.types.Operator):
     def invoke(self, context, event):
         wm = context.window_manager
         return wm.invoke_props_dialog(self)
+
+class QuicklyGroupIntoEmpty(bpy.types.Operator):
+    """Creates a new empty at the median and puts all the selected objects as their child."""
+    bl_idname = 'object.quickgroup'
+    bl_label = 'Quick Group'
+    bl_options = { 'REGISTER', 'UNDO' }
+
+    @classmethod
+    def poll(self, context):
+        return context.mode == 'OBJECT'
+
+    def execute(self, context):
+        median = Vector((0.0, 0.0, 0.0))
+        for obj in context.selected_objects:
+            median += obj.location
+        median /= len(context.selected_objects)
+
+        new_empty = bpy.data.objects.new(name='Empty', object_data=None)
+        context.scene.collection.objects.link(new_empty)
+        new_empty.location = median
+        context.view_layer.update()
+
+        for obj in context.selected_objects:
+            obj.parent = new_empty
+            obj.matrix_parent_inverse = new_empty.matrix_world.inverted()
+
+        return {'FINISHED'}
 
 # 
 #  Quickly creates a bridge between two edge loops
@@ -337,6 +365,7 @@ classes = (
     OpenProjectFolder,
     AddPoseBonesToKeyingSet,
     RenameBoneChain,
+    QuicklyGroupIntoEmpty,
 )
 def register():
     for c in classes: bpy.utils.register_class(c)
