@@ -12,7 +12,7 @@ bl_info = {
 
 import webbrowser
 import bpy
-from mathutils import Vector
+from mathutils import Vector, Matrix
 
 class RenameBoneChain(bpy.types.Operator):
     """Renames a given bone chain, with the active bone being the root"""
@@ -66,11 +66,11 @@ class QuicklyGroupIntoEmpty(bpy.types.Operator):
         new_empty = bpy.data.objects.new(name='Empty', object_data=None)
         context.scene.collection.objects.link(new_empty)
         new_empty.location = median
-        context.view_layer.update()
+        calculated_matrix = Matrix.Translation(median)
 
         for obj in context.selected_objects:
             obj.parent = new_empty
-            obj.matrix_parent_inverse = new_empty.matrix_world.inverted()
+            obj.matrix_parent_inverse = calculated_matrix.inverted()
 
         return {'FINISHED'}
 
