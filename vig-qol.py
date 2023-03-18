@@ -12,7 +12,39 @@ bl_info = {
 
 import webbrowser
 import bpy
-from functools import reduce
+
+class RenameBoneChain(bpy.types.Operator):
+    """Renames a given bone chain, with the active bone being the root"""
+    bl_idname = 'pose.renamechain'
+    bl_label = 'Rename bone chain'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    new_name: bpy.props.StringProperty(name='Bone Chain Name', default='')
+
+    @classmethod
+    def poll(self, context):
+        return (context.mode == 'EDIT_ARMATURE') and (context.active_bone in context.selected_bones)
+
+    def execute(self, context):
+        queue = [context.active_bone]
+
+        while len(queue) != 0:
+            current = queue.pop(0)
+            current.name = self.new_name
+
+            newly_added = 0
+            for child in current.children:
+                if child in context.selected_bones:
+                    queue.append(child)
+                    newly_added += 1
+            if newly_added >= 2:
+                self.report({'WARNING'}, 'Branching present in selection, result might not be what you have expected.')
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        wm = context.window_manager
+        return wm.invoke_props_dialog(self)
 
 # 
 #  Quickly creates a bridge between two edge loops
@@ -303,7 +335,8 @@ classes = (
     ViewSettingsSwitcherUpdateOperator,
     ViewSettingsSwitcherPanel,
     OpenProjectFolder,
-    AddPoseBonesToKeyingSet
+    AddPoseBonesToKeyingSet,
+    RenameBoneChain,
 )
 def register():
     for c in classes: bpy.utils.register_class(c)
