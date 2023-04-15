@@ -4,7 +4,31 @@ Blender addons that I've written that are somewhat useful (for me).
 
 ---
 
-## `vig-qol.py`
+## Table of Contents
+
+Only non-deprecated addons are listed here.
+
+- [`vig-qol.py`](#vig-qolpy) - General quality of life operators and tools
+    - Operators:
+        - Quick Sew
+        - Toggle Pose Position Operator
+        - Open Project's directory Opearator
+        - Add Selected PoseBones to KeyingSet
+        - Rename Bone Chain
+        - Quick Group into Empty
+    - Bone Layer Switcher
+    - View Settings Switcher
+- [`bpy-socket.py`](#bpy-socketpy) - bpy over TCP
+- [`blender-gl.py`](#blender-glpy) - Quickly see what is being used for the viewport
+- [`bind-to-armature.py`](#bind-to-armaturepy) - Bind meshes to another armature-bound mesh
+- [`Rigify-To-Unity`](#rigify-to-unity) - Converts a generated Rigify armature to Unity
+- [`render-button.py`](#render-buttonpy) - Alternative render buttons that automatically change render destination
+- [`render-webhook.py`](#render-webhookpy) - Send render status to a Discord Webhook
+- [`change-imageprojection.py`](#change-imageprojectionpy) - Change all selected Image Node's projection settings
+
+---
+
+### [`vig-qol.py`](./vig-qol.py)
 
 Basically, I got lazy with separating things into different files/addons, so this is my general QOL package, which includes:
 
@@ -60,15 +84,54 @@ Please do note that UI wise they may feel cluttery, clunky and may be unoptimize
 
 ---
 
-## `blender-gl.py`
+### [`bpy-socket.py`](./bpy-socket.py)
 
-This addons adds a section into the Render settings which just displays the current OpenGL renderer information.
+Creates a TCP socket, into which you can send commands which are executed on a configurable Blender timer.
 
-The sole reason why this addon exists is because of [a bug](https://developer.blender.org/T80458), that causes a full GPU hang on Linux on Intel UHD620. One of the workarounds I found is to switch the driver from `iris` to `i965` and to ensure that the correct driver is set, I check if the driver Blender uses is `DRI`.
+By default, the addon is configured to be bound on `localhost:47787`. To start the server, you need to press the "Start Server" button on top right, next to your Scene selections.
+
+![](./assets/bpysocket_enable.png)
+
+To use different address (eg. allow external connections) or port and different settings, check out the addon's Preferences.
+
+After that, you can start sending Python scripts to the TCP socket. All of the bytes that is sent from when the connection is opened to the time is closed is then passed to be evaluated.
+
+The server only starts running when you start it by pressing the button, otherwise it stays dormant and does nothing. 
+
+As mentioned in the warning itself, security was not on the priority list, so use at your own discretion.
+
+<details>
+    <summary>As to why you ask this even exists?</summary>
+
+I wanted a way to auto-reload the image/viewport when the file has changed on disk. There already was an addon, however it was checking *every image* in the project, comparing its modified times. 
+
+This was kind of unwanted for me, given that my projects are sometimes on a remote storage and that can cause hiccups and stutters. 
+
+And to avoid making an addon, make it pretty and presentable and all that, I just go the good old way of Bash scripting:
+
+```sh
+#!/usr/bin/env bash
+
+while true; do
+    inotifywait -e close_write ina_priestess_dress.kra
+    nc localhost 47787 <<< 'bpy.data.images["ina_priestess_dress"].reload()'
+done
+```
+</details>
 
 ---
 
-## `bind-to-armature.py`
+### [`blender-gl.py`](./blender-gl.py)
+
+This addons adds a section into the Render settings which just displays the current OpenGL renderer information.
+
+The sole reason why this addon exists is because of [a bug](https://projects.blender.org/blender/blender/issues/80458), that causes a full GPU hang on Linux on Intel UHD620. One of the workarounds I found is to switch the driver from `iris` to `i965` and to ensure that the correct driver is set, I check if the driver Blender uses is `DRI`.
+
+Note that this was not tested on MacOS with Metal, although I don't see a reason why you'd need this addon there, or anywhere for that matter.
+
+---
+
+### [`bind-to-armature.py`](./bind-to-armature.py)
 
 Automates the process of rigging clothes to a mesh as described [here](https://blender.stackexchange.com/questions/67625/how-to-rig-clothes). Alongside that, it also cleans the weights as wel.
 
@@ -78,15 +141,7 @@ Automates the process of rigging clothes to a mesh as described [here](https://b
 
 ---
 
-## `apply-modifiers-preserve-shapekeys.py`
-
-Creates a clone of active object and applies all of its modifiers while perserving shape keys. If the source is linked to an armature, then the script attempts to do the same to the final mesh.
-
-***Note***: This was only tested on modifiers that do not change vertex count or weight groups while using different shape key values.
-
----
-
-## [`Rigify-To-Unity`](https://github.com/vignedev/Rigify-To-Unity)
+### [`Rigify-To-Unity`](https://github.com/vignedev/Rigify-To-Unity)
 
 Fork of [AlexLemminG's](https://github.com/AlexLemminG/Rigify-To-Unity) Blender script with support for already weight mapped rigs.
 
@@ -98,7 +153,7 @@ In addition to removal of incompatible bones, it merges vertex groups of deleted
 
 ---
 
-## `render-button.py`
+### [`render-button.py`](./render-button.py)
 
 ![](./assets/render_btn.png)
 
@@ -114,7 +169,7 @@ bpy.context.scene.frame_set(bpy.context.scene.frame_current) # This triggers the
 
 ---
 
-## `render-webhook.py`
+### [`render-webhook.py`](./render-webhook.py)
 
 Adds an option to execute a Discord webhook after a render job is completed.
 
@@ -122,8 +177,24 @@ You'll need to enable the addon, set the Webhook URL in the addon's preferences 
 
 ---
 
-## `change-imageprojection.py`
+### [`change-imageprojection.py`](./change-imageprojection.py)
 
 Quickly changes image projection type of selected nodes in the Shader Node editor.
 
 [![Example](./assets/projection_change.gif)](./assets/projection_change.mp4)
+
+---
+
+## Deprecated
+
+These addons are no longer maintained due to either being broken from the very start, non-sensical or I just don't have the need for them anymore.
+
+---
+
+### [~~`apply-modifiers-preserve-shapekeys.py`~~](./apply-modifiers-preserve-shapekeys.py)
+
+⚠️ **Deprecated, old and broken. Seek alternatives for safety sakes.**
+
+Creates a clone of active object and applies all of its modifiers while perserving shape keys. If the source is linked to an armature, then the script attempts to do the same to the final mesh.
+
+***Note***: This was only tested on modifiers that do not change vertex count or weight groups while using different shape key values.
