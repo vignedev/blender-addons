@@ -11,7 +11,7 @@ bl_info = {
 }
 
 import bpy
-import bgl
+import gpu
 import os
 
 class GLRendererInfo(bpy.types.Panel):
@@ -22,9 +22,10 @@ class GLRendererInfo(bpy.types.Panel):
     bl_region_type = 'WINDOW'
     bl_context = "render"
 
-    renderer = bgl.glGetString(bgl.GL_RENDERER)
-    vendor = bgl.glGetString(bgl.GL_VENDOR)
-    version = bgl.glGetString(bgl.GL_VERSION)
+    backend = gpu.platform.backend_type_get()
+    renderer = gpu.platform.renderer_get()
+    vendor = gpu.platform.vendor_get()
+    version = gpu.platform.vendor_get()
     
     workaround_path = '/sys/class/drm/card0/engine/rcs0/preempt_timeout_ms'
     last_time_check = None
@@ -39,7 +40,7 @@ class GLRendererInfo(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        if 'Mesa Intel(R) UHD Graphics 620' in self.renderer:
+        if self.backend == 'OPENGL' and 'Mesa Intel(R) UHD Graphics 620' in self.renderer:
             box = layout.box()
             if self.last_time_check is None:
                 self.get_timeout_ms()
@@ -55,6 +56,8 @@ class GLRendererInfo(bpy.types.Panel):
         row.label(text="Vendor: " + self.vendor)
         row = layout.row()
         row.label(text="Version: " + self.version)
+        row = layout.row()
+        row.label(text="Backend: " + self.backend)
         row = layout.row()
 
 def register():
