@@ -53,24 +53,35 @@ class QuicklyGroupIntoEmpty(bpy.types.Operator):
     bl_label = 'Quick Group'
     bl_options = { 'REGISTER', 'UNDO' }
 
+    auto_parent: bpy.props.BoolProperty(
+        name='Set as parent',
+        description='Parent selected objects to the empty. (only for object mode)',
+        default=True
+    )
+
     @classmethod
     def poll(self, context):
-        return context.mode == 'OBJECT'
+        return context.mode == 'OBJECT' or context.mode == 'EDIT_MESH'
+
+    def get_median(self, context: bpy.types.Context):
+        if context.mode == 'OBJECT':
+            return sum([x.location for x in context.selected_objects], Vector()) / len(context.selected_objects)
+        elif context.mode == 'EDIT_MESH':
+            selected_verts = [x.co for x in context.object.data.vertices if x.select]
+            return context.object.matrix_world @ sum(selected_verts, Vector()) / len(selected_verts)
 
     def execute(self, context):
-        median = Vector((0.0, 0.0, 0.0))
-        for obj in context.selected_objects:
-            median += obj.location
-        median /= len(context.selected_objects)
+        median = self.get_median(context)
 
         new_empty = bpy.data.objects.new(name='Empty', object_data=None)
         context.scene.collection.objects.link(new_empty)
         new_empty.location = median
-        calculated_matrix = Matrix.Translation(median)
 
-        for obj in context.selected_objects:
-            obj.parent = new_empty
-            obj.matrix_parent_inverse = calculated_matrix.inverted()
+        if context.mode == 'OBJECT' and self.auto_parent:
+            calculated_matrix = Matrix.Translation(median)
+            for obj in context.selected_objects:
+                obj.parent = new_empty
+                obj.matrix_parent_inverse = calculated_matrix.inverted()
 
         return {'FINISHED'}
 
