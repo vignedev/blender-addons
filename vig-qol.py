@@ -1,8 +1,8 @@
 bl_info = {
     "name": "vignedev's quality of life",
     "author": "vignedev",
-    "version": (1, 0),
-    "blender": (3, 4, 0),
+    "version": (1, 0, 1),
+    "blender": (4, 0, 0),
     "location": "Random",
     "description": "Adds a few operators to ease life, since it is painful either way.",
     "warning": "",
