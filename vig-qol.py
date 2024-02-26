@@ -141,6 +141,7 @@ class BoneLayerSwitcherUpdateOperator(bpy.types.Operator):
         ('UNPACK', 'Unpack', '')
     ], options={'HIDDEN'} )
     key: bpy.props.StringProperty(name='Key', default='wah')
+    union: bpy.props.BoolProperty(name='Union', default=False)
     confirmed: bpy.props.BoolProperty(name='Confirmed', default=False)
 
     def execute(self, context):
@@ -154,14 +155,23 @@ class BoneLayerSwitcherUpdateOperator(bpy.types.Operator):
         elif self.action == 'REMOVE':
             armature['saved_bonelayers'].pop(self.key, None)
         elif self.action == 'UNPACK':
+            # clean slate
+            if not self.union:
+                for col in armature.collections:
+                    col.is_visible = False
             for name, visibility in armature['saved_bonelayers'][self.key].items():
                 if name not in armature.collections:
                     self.report({'WARNING'}, f'Collection "{name}" was not found in the armature.')
                     continue
-                armature.collections[name].is_visible = visibility
+                
+                if visibility:
+                    armature.collections[name].is_visible = visibility
         return {'FINISHED'}
     
-    def invoke(self, context, event):
+    def invoke(self, context, event: bpy.types.Event):
+        if self.action == 'UNPACK':
+            self.union = event.shift
+
         if self.action == 'ADD' and not self.confirmed:
             wm = context.window_manager
             return wm.invoke_props_dialog(self)
@@ -186,7 +196,6 @@ class BoneLayerSwitcherPanel(bpy.types.Panel):
         armature = context.active_object.data
 
         layout = self.layout
-        # layout.operator(operator='script.reload', text='Reload Script', icon='FILE_REFRESH')
         
         layout.prop(armature, 'pose_position', expand=True)
         row = layout.row()

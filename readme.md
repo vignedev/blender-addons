@@ -44,7 +44,7 @@ Basically, I got lazy with separating things into different files/addons, so thi
 
 <details>
     <summary><b>Bone Layer Switcher</b></summary>
-    Allows to quicky switch between multiple group of bone layers.
+    Allows to quicky switch between multiple group of bone layers. When holding <kbd>Shift</kbd>, it will also do a union of the already visible bone collections and the ones saved ones.
     
 https://user-images.githubusercontent.com/18449733/187050267-954c92c0-9302-4a93-a048-90b43fda7538.mp4
 </details>
@@ -58,7 +58,7 @@ https://user-images.githubusercontent.com/18449733/187050269-1d5c82dd-799d-4dec-
 
 <details>
     <summary><b>Open Project's directory</b></summary>
-    Opens the directory where the project is located in the file explorer using the `webbrowser.open` method. On Linux, it will attempt to use `xdg-open`, if the user has it installed, otherwise it uses the aforementioned method.
+    Opens the directory where the project is located in the file explorer using the `webbrowser.open` method. On Linux, it will attempt to use <code>xdg-open</code>, if the user has it installed, otherwise it uses the aforementioned method.
 </details>
 
 <details>
