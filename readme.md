@@ -182,19 +182,3 @@ You'll need to enable the addon, set the Webhook URL in the addon's preferences 
 Quickly changes image projection type of selected nodes in the Shader Node editor.
 
 [![Example](./assets/projection_change.gif)](./assets/projection_change.mp4)
-
----
-
-## Deprecated
-
-These addons are no longer maintained due to either being broken from the very start, non-sensical or I just don't have the need for them anymore.
-
----
-
-### [~~`apply-modifiers-preserve-shapekeys.py`~~](./apply-modifiers-preserve-shapekeys.py)
-
-⚠️ **Deprecated, old and broken. Seek alternatives for safety sakes.**
-
-Creates a clone of active object and applies all of its modifiers while perserving shape keys. If the source is linked to an armature, then the script attempts to do the same to the final mesh.
-
-***Note***: This was only tested on modifiers that do not change vertex count or weight groups while using different shape key values.
