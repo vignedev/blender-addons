@@ -141,6 +141,7 @@ class BoneLayerSwitcherUpdateOperator(bpy.types.Operator):
         ('UNPACK', 'Unpack', '')
     ], options={'HIDDEN'} )
     key: bpy.props.StringProperty(name='Key', default='wah')
+    confirmed: bpy.props.BoolProperty(name='Confirmed', default=False)
 
     def execute(self, context):
         armature: bpy.types.Armature = context.active_object.data
@@ -161,7 +162,7 @@ class BoneLayerSwitcherUpdateOperator(bpy.types.Operator):
         return {'FINISHED'}
     
     def invoke(self, context, event):
-        if self.action == 'ADD':
+        if self.action == 'ADD' and not self.confirmed:
             wm = context.window_manager
             return wm.invoke_props_dialog(self)
         else:
@@ -195,10 +196,14 @@ class BoneLayerSwitcherPanel(bpy.types.Panel):
         box = layout.box()
         if 'saved_bonelayers' in armature:
             for key in armature['saved_bonelayers']:
-                row = box.row()
+                row = box.row(align=True)
                 btn = row.operator(operator='bonelayerswitcher.update', text=key)
                 btn.action = 'UNPACK'
                 btn.key = key
+                update_button = row.operator(operator='bonelayerswitcher.update', icon='FILE_REFRESH', text='')
+                update_button.key = key
+                update_button.action = 'ADD'
+                update_button.confirmed = True
                 del_button = row.operator(operator='bonelayerswitcher.update', icon='REMOVE', text='')
                 del_button.key = key
                 del_button.action = 'REMOVE'
@@ -219,6 +224,7 @@ class ViewSettingsSwitcherUpdateOperator(bpy.types.Operator):
         ('UNPACK', 'Unpack', '')
     ], options={'HIDDEN'} )
     key: bpy.props.StringProperty(name='Key', default='wah')
+    confirmed: bpy.props.BoolProperty(name='Confirmed', default=False)
 
     def execute(self, context):
         scene = context.scene
@@ -281,7 +287,7 @@ class ViewSettingsSwitcherUpdateOperator(bpy.types.Operator):
         return {'FINISHED'}
     
     def invoke(self, context, event):
-        if self.action == 'ADD':
+        if self.action == 'ADD' and not self.confirmed:
             wm = context.window_manager
             return wm.invoke_props_dialog(self)
         else:
@@ -310,10 +316,14 @@ class ViewSettingsSwitcherPanel(bpy.types.Panel):
         box = layout.box()
         if 'saved_viewsettings' in scene:
             for key in scene['saved_viewsettings']:
-                row = box.row()
+                row = box.row(align=True)
                 btn = row.operator(operator='viewsettingsswitcher.update', text=key)
                 btn.action = 'UNPACK'
                 btn.key = key
+                update_button = row.operator(operator='viewsettingsswitcher.update', icon='FILE_REFRESH', text='')
+                update_button.key = key
+                update_button.action = 'ADD'
+                update_button.confirmed = True
                 del_button = row.operator(operator='viewsettingsswitcher.update', icon='REMOVE', text='')
                 del_button.key = key
                 del_button.action = 'REMOVE'
