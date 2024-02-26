@@ -58,7 +58,7 @@ https://user-images.githubusercontent.com/18449733/187050269-1d5c82dd-799d-4dec-
 
 <details>
     <summary><b>Open Project's directory</b></summary>
-    Opens the directory where the project is located in the file explorer.
+    Opens the directory where the project is located in the file explorer using the `webbrowser.open` method. On Linux, it will attempt to use `xdg-open`, if the user has it installed, otherwise it uses the aforementioned method.
 </details>
 
 <details>

@@ -12,7 +12,10 @@ bl_info = {
 
 import webbrowser
 import bpy
+import sys
+import shutil
 from mathutils import Vector, Matrix
+import subprocess
 
 class RenameBoneChain(bpy.types.Operator):
     """Renames a given bone chain, with the active bone being the root"""
@@ -331,6 +334,16 @@ class OpenProjectFolder(bpy.types.Operator):
         return bpy.path.abspath('//') != ''
 
     def execute(self, context):
+        folder_path = bpy.path.abspath('//')
+
+        # linux specific (and with those who have xdg-open)
+        if sys.platform.startswith('linux'):
+            if shutil.which('xdg-open') is not None:
+                subprocess.Popen(['xdg-open', folder_path])
+                return { 'FINISHED' }
+        
+        # fallback to whatever webbrowser provides you, it might open
+        # the browser and not the explorer for whatever reason
         webbrowser.open(bpy.path.abspath('//'))
         return { 'FINISHED' }
 
