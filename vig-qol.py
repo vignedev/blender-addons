@@ -143,19 +143,21 @@ class BoneLayerSwitcherUpdateOperator(bpy.types.Operator):
     key: bpy.props.StringProperty(name='Key', default='wah')
 
     def execute(self, context):
-        armature = context.active_object.data
+        armature: bpy.types.Armature = context.active_object.data
 
         if 'saved_bonelayers' not in armature:
             armature['saved_bonelayers'] = {}
 
         if self.action == 'ADD':
-            armature['saved_bonelayers'][self.key] = armature.layers[:]
+            armature['saved_bonelayers'][self.key] = dict((col.name, col.is_visible) for col in armature.collections)
         elif self.action == 'REMOVE':
             armature['saved_bonelayers'].pop(self.key, None)
         elif self.action == 'UNPACK':
-            armature.layers[31] = True # workaround, set the last one to true, but it will be overwritten anyways
-            for i in range(0, 32):
-                armature.layers[i] = armature['saved_bonelayers'][self.key][i]
+            for name, visibility in armature['saved_bonelayers'][self.key].items():
+                if name not in armature.collections:
+                    self.report({'WARNING'}, f'Collection "{name}" was not found in the armature.')
+                    continue
+                armature.collections[name].is_visible = visibility
         return {'FINISHED'}
     
     def invoke(self, context, event):
