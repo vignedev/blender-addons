@@ -55,20 +55,17 @@ class QuicklyGroupIntoEmpty(bpy.types.Operator):
 
     auto_parent: bpy.props.BoolProperty(
         name='Set as parent',
-        description='Parent selected objects to the empty. (only for object mode)',
+        description='Parent selected objects to the empty.',
         default=True
     )
 
     @classmethod
     def poll(self, context):
-        return context.mode == 'OBJECT' or context.mode == 'EDIT_MESH'
+        return context.mode == 'OBJECT' and len(context.selected_objects) >= 1
 
     def get_median(self, context: bpy.types.Context):
         if context.mode == 'OBJECT':
             return sum([x.location for x in context.selected_objects], Vector()) / len(context.selected_objects)
-        elif context.mode == 'EDIT_MESH':
-            selected_verts = [x.co for x in context.object.data.vertices if x.select]
-            return context.object.matrix_world @ sum(selected_verts, Vector()) / len(selected_verts)
 
     def execute(self, context):
         median = self.get_median(context)
