@@ -94,7 +94,7 @@ By default, the addon is configured to be bound on `localhost:47787`. To start t
 
 To use different address (eg. allow external connections) or port and different settings, check out the addon's Preferences.
 
-After that, you can start sending Python scripts to the TCP socket. All of the bytes that is sent from when the connection is opened to the time is closed is then passed to be evaluated.
+After that, you can start sending Python scripts to the TCP socket. The bytes sent before the socket's closure or before reading a `NULL` byte will be evaluated, after which the `sys.stdout` is sent back to the socket with a `NULL` byte at the end.
 
 The server only starts running when you start it by pressing the button, otherwise it stays dormant and does nothing. 
 

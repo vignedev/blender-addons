@@ -2,13 +2,14 @@ import bpy
 import socket
 import queue
 import socketserver
-import struct
 import threading
+import sys
+from io import StringIO
 
 bl_info = {
     'name': 'bpy socket',
     'author': 'vignedev',
-    'version': (0, 0, 1),
+    'version': (0, 0, 2),
     'blender': (3, 4, 0),
     'description': 'Expose bpy as a TCP server',
     'warning': 'Security was literally at the bottom of the priority list.'
@@ -18,28 +19,33 @@ bl_info = {
 server: socketserver.TCPServer = None
 server_thread: threading.Thread = None
 commands = queue.Queue()
+message_delimiter = b'\x00'
 
 # ------------------------------------------------------------------------------------------------ #
 
 class CommandHandler(socketserver.BaseRequestHandler):
-    def recvall(self, sock):
-        data = bytearray()
-        while True:
-            packet = sock.recv(4096)
-            if not packet:
-                break
-            data.extend(packet)
-        return data if len(data) > 0 else None
+    def enqueue_script(self, script: bytearray, sock: socket.socket):
+        if script is not None:
+            print(f'[bpy.socket] received script of {len(script)} bytes, inserting script={script} and sock={sock}')
+            if len(script) > 0: commands.put((script, sock))
+        else:
+            print('[bpy.socket] received None as message')
 
     def handle(self):
         global commands
 
-        self.message = self.recvall(self.request)
-        if self.message is not None:
-            print(f'[bpy.socket] received script of {len(self.message)} bytes')
-            commands.put(self.message)
-        else:
-            print('[bpy.socket] received None as message')
+        self.buffer = bytearray()
+        while True:
+            char = self.request.recv(1) # not really happy about this, but am searching for '\0'
+            if not char: break  # socket was closed
+            if char == message_delimiter:
+                self.enqueue_script(self.buffer.copy(), self.request)
+                self.buffer.clear()
+            else:
+                self.buffer.extend(char)
+        
+        # send the remaining buffer
+        self.enqueue_script(self.buffer, self.request)
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
@@ -84,12 +90,30 @@ def evaluators(*args):
     global commands
 
     while not commands.empty() and commands.mutex:
-        command = commands.get()
+        (command, sock) = commands.get()
         commands.task_done()
+
+        original_stdout = sys.stdout
+        sys.stdout = StringIO()
+
         try:
+            print('[bpy.socket] executing script')
             exec(command)
         except Exception as ex:
-            print(ex)
+            print('[bpy.socket] exec error:', ex)
+        
+        captured_stdout = sys.stdout.getvalue()
+        try:
+            print('[bpy.socket] attempting to send back data')
+            sock.sendall(captured_stdout.encode())
+            sock.sendall(message_delimiter)
+            sock.close()
+        except Exception as ex:
+            original_stdout.write(captured_stdout)
+            sys.stdout = original_stdout
+            print('[bpy.socket] failed to send back response to client:', ex)
+
+        sys.stdout = original_stdout
 
     pref: BpySocketPrefs = bpy.context.preferences.addons[__name__].preferences
     return pref.refresh_rate
