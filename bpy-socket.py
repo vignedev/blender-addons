@@ -182,6 +182,8 @@ def register():
 
 def unregister():
     destroy_socket()
+    if bpy.app.timers.is_registered(evaluators):
+        bpy.app.timers.unregister(evaluators)
     bpy.app.handlers.load_post.remove(on_project_load)
     for c in classes: bpy.utils.unregister_class(c)
     bpy.types.TOPBAR_HT_upper_bar.remove(bpysocket_drawer)
