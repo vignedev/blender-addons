@@ -8,8 +8,6 @@ bl_info = {
     'warning': 'Mostly for Discord Webhooks.'
 }
 
-from email.policy import default
-from re import M
 import bpy
 import json
 import requests
